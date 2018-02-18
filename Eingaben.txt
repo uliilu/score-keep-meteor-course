@@ -1,0 +1,240 @@
+Alle Eingaben, die während des Tutorials stattfinden
+[~] meteor create hello-meteor
+[~] meteor npm install
+[~] meteor run
+
+DDP => Distributed Data Protocol
+
+Score-Keep Application
+[~] meteor create score-keep
+// mit "meteor create --release 1.4.2.1 score-keep" kann das Ganze mit einer anderen Version von meteor erstellt werden
+
+Es gibt "eager loading" und "lazy loading"
+- "eager" verwendet vordefinierte Pfade
+- "lazy" verwendet die ES6 import Function
+Empfohlen wird definitiv "lazy loading", "eager loading" wird wegen der Rückwärtskompatibilität weiterhin unterstützt.
+
+WICHTIG!: meteor lädt alle JS-Dateien, die es findet ohne dazu aufgefordert zu werden.
+Es gibt bestimmte Verzeichnisse, bspw. "client"  oder "server", wenn sich darin Dateien befinden, werden diese automatisch "eager" geladen.
+"public" steht sofort öffentlich zur Verfügung. Befindet sich darin eine "help.html"-Datei, kann sie mittels der URL/help.html sofort geladen werden.
+Auch empfiehlt es sich dort SVGs, Fonts und/oder Images unterzubringen.
+
+//------------------------------- Beispiel "utils.js":
+export let greetUser = () => {
+    return 'Hallo Benutzer!';
+};
+
+export let name = 'Uli von Homeyer';
+
+export default 'Default Wert!';
+oder
+let myDefault = 'Default Wert!';
+export default myDefault;
+//------------------------------- Beispiel "utils.js":
+
+Wenn beim "import" nur ein Wert benötigt wird, vorhanden ist, kann dies über "import Variablenname from './../import/utils';" erledigt werden.
+Dazu muss sich zwingend in der "utils.js" ein "export default ..." befinden.
+Befinden sich mehrere Werte mit oder ohne "export default ..." in einer "imports"-Datei, werden diese wie folgt geholt:
+"import { VaribleEins, VariableZwei } from './../imports/utils';"
+
+"react und react-dom" als NPM-Paket installieren
+[~] meteor npm install react react-dom
+[~] meteor npm install prop-types --save // PropTypes ist nicht mehr Teil von React, deswegen muss es zusätzlich installiert werden.
+
+Drei verschiedene import-Varianten:
+'./../imports/utils';   // "lazy load", import kommt aus einer Datei im Verzeichnisbaum
+'react-dom';            // direkt aus einem npm Modul heraus
+'meteor/meteor';        // eine methode aus dem meteor-Modul heraus
+
+Inhalt an den Browser senden:
+let jsx = <p>Dies ist von /client/main.js</p>;          // Erstellt das JSX, welches geschickt wird.
+ReactDOM.render(jsx, document.getElementById('app'));   // Schickt das generierte HTML an den Browser "jsx", die Variable,
+document.getElementById('app') // Wo das HTML rein soll.
+
+SQL         zu      NoSQL wie MongoDB
+Table               Collection
+Row/Record          Document
+Column              Field
+
+Tracker sorgt dafür, dass MongoDB-Inhalte auch in der MiniMongo DB auftauchen/synchronisiert werden. MiniMongoDbs befinden sich auf dem Client,
+sie werden mit Tracker automatisch aktualisiert, sobald sich in der MongoDB, (liegt auf Server), etwas verändert.
+import { Tracker } from 'meteor/tracker';
+Meteor.startup(() => {
+    Tracker.autorun(() => {
+    }
+}
+
+Components benötigen immer "import React from 'react'" wenn sie Inhalte in JSX ausgeben sollen.
+Meistens die "class" kann dann mit "export default class TitleBar {" als Default exportiert werden. Klassen werden immer groß geschrieben.
+In der Klasse wird mit
+render() {
+    return (
+        JSX
+    )
+}
+JSX an der Stelle ausgegeben, wo diese Component als bspw. "<TitleBar/>" eingefügt wurde.
+In return () darf sich max ein root-Element befinden. Meist ein <div></div>.
+
+Wenn ein Component initialisiert wird, werden props automatisch zur Instanz hinzugefügt.
+Beispiel:
+in <TitleBar title="Ein Titel"> ist "title" eine prop. Diese prop steht in der component TitleBar damit automatisch zur Verfügung
+In der component-class, in der "render()" Methode, stehen alle props als "this.props" zur Verfügung.
+
+Wenn components erstellt werden, kommen die Methoden mit in die class. Z.B. die class AddPlayer.js.
+Um das "this" aus den übergebenen props in einem Methodenaufruf zu erhalten, muss es z.B. in AddPlayer.js an das handleSubmit "gebunden" werden.
+this.handleSubmit = Aufruf der Methode "handleSubmit" in dieser class
+.bind(this); enthält das "this", in dem auch die übergebenen "props" enthalten sind. Also schaut's so aus:
+this.handleSubmit.bind(this)
+
+Per Meteor/React documents in MongoDB finden
+--------------------------------------------
+In MongoDB ein document mit einem bestimmten Wert finden:
+Players.find({name: 'Uli'}).fetch();
+
+In MongoDB die/eine Liste sortiert zurück erhalten:
+Players.find({}, {
+    sort: {score: -1}
+}).fetch();
+Das erste object "{}" in find() ist leer, um alles zurück zu erhalten.
+Das zweite object "{sort: {score: -1}}" gibt an nach welchem field in welcher Reihenfolge die Liste sortiert werden soll.
+
+SCSS - Installation: meteor add fourseven:scss
+Dies ist ein Atmosphere package, diese benötigen KEINE explizite import Anweisung, bedingt durch die
+Vorgabe bestimmter Verzeichnisstrukturen und bestimmter Namensgebungen von Dateien, funktionieren
+sie automatisch ohne weitere Konfiguration!
+
+
+BEM - Block, Element, Modifier convention
+*** Immer mit Klassen "class" selektieren ***
+Block - Core building block for the website
+Element - Things that go inside of building blocks
+Modifier - Verändert das Verhalten eines Blocks oder Elements
+
+Element hinzufügen
+Schema: block__element
+.some-item__some-message
+Block = .some-item
+Element = some-message
+diese werden immer mit zwei Unterstrichen "__" getrennt
+Mehrere Begriffe werden mit Bindestrich getrennt
+
+Modifier hinzufügen => immer mit zwei Bindestrichen "--"
+.some-block__some-element--some-modifier
+
+
+Flex Box
+<form className="form" onSubmit={this.handleSubmit.bind(this)}>
+    <input type="text" name="spielername" placeholder="Spielername" />
+    <button className="button">Spieler hinzufügen</button>
+</form>
+<form></form> ist der flex container. Alles darin sind items.
+
+Third party component JSX einer component hinzufügen:
+Vorher: <AddPlayer/>
+Jetzt:
+<AddPlayer>
+    <h1>Test</h1>
+</AddPlayer>
+Mit "{this.props.children}" hat man Zugriff auf das JSX, welches in <AddPlayer> steht. Somit kann es direkt an der entsprechenden
+Stelle ausgegeben werden.
+Das hier:
+<div className="item">
+    {this.props.children}
+    <form className="form" onSubmit={this.handleSubmit.bind(this)}>
+        <input className="form__input" type="text" name="spielername" placeholder="Spielername" />
+        <button className="button">Neuer Spieler</button>
+    </form>
+</div>
+gibt folgendes aus:
+<div className="item">
+    <h1>Test</h1>
+    <form className="form" onSubmit={this.handleSubmit.bind(this)}>
+        <input className="form__input" type="text" name="spielername" placeholder="Spielername" />
+        <button className="button">Neuer Spieler</button>
+    </form>
+</div>
+
+Weitere component für die Darstellung und Animation der Liste:
+[~] meteor npm install react-flip-move --save
+
+// Object Spread Operator
+Damit können alle properties eines objects zu einem anderen kopiert werden.
+Beispiel:
+let user = {
+    name: 'Uli',
+    ort: 'Bonn',
+    alter: 52
+};
+let person = {
+    ...user,
+    alter: 25
+};
+Gibt als console.log(person); folgendes aus:
+{ name: 'Uli', ort: 'Bonn', alter: 25 }
+Durch das "...user" wird das object "user" innerhalb von "person" gespreaded
+In "person" wird "alter" überschrieben, weil neu definiert!
+
+// Object Property Shorthand
+Hiermit können properties eins objects definiert werden, wenn eine Variable mit gleichem Namen existiert
+let bike = 'Commencal';
+let zeug = {
+    bike: bike
+};
+console.log(bike);
+Statt "bike: bike" zu verwenden, kann die Variable direkt verwendet werden, weil der Parameter "bike"
+genauso lautet wie die verwendete Variable.
+Deswegen:
+let bike = 'Commencal';
+let zeug = {
+    bike
+};
+console.log(bike);
+Beide geben das gleiche aus und sind identisch...!
+Weietres Beispiel:
+let haus = {
+    schlafzimmer: 2,
+    bad: 1.5
+};
+let baujahr = 1956;
+let alles = {
+    ...haus,
+    schlafzimmer: 3,
+    baujahr,
+    boden: 'Teppich'
+};
+console.log(alles);
+
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
+[~] 
